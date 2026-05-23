@@ -53,4 +53,4 @@ const LibroController = {
     }
 };
 
-modeule.exports = LibroController;
+module.exports = LibroController;
