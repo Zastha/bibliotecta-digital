@@ -11,7 +11,7 @@ const PrestamoController = {
         }
     },
 
-    async getActivos(res, res){
+    async getActivos(req, res){
         try{
             const prestamos = await PrestamoModel.getActivos();
             res.status(200).json({data: prestamos});
@@ -30,7 +30,7 @@ const PrestamoController = {
 
         },
 
-        async getProximosAVencer(res, res){
+        async getProximosAVencer(req, res){
             try{
                 const dias = req.query.dias || 3;
                 const prestamos = await PrestamoModel.getProximosAVencer(dias);
