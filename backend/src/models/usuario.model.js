@@ -6,7 +6,7 @@ const UsuarioModel = {
         return result.rows;
     },
     async getById(id){
-        const result = await pool.query('SELECT * FROM usuario WHERE id = $1', [id]);
+        const result = await pool.query('SELECT * FROM usuarios WHERE id = $1', [id]);
         return result.rows[0];
     },
     async getByAuthId(authId){
