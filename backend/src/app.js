@@ -10,7 +10,7 @@ app.use(express.json());
 
 // Ruta de salud
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Servidor de Biblioteca Digital funcionando 📚' });
+  res.json({ status: 'ok', message: 'Servidor de Biblioteca Digital funcionando' });
 });
 
 // Rutas

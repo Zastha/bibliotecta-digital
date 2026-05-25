@@ -24,7 +24,7 @@ const LicenciaController = {
         try{
             const {libroId} = req.body;
             if(!libroId) return res.status(400).json({error: 'libroId es requerido'});
-            const licencia = await LicenciaModel.create(libroID);
+            const licencia = await LicenciaModel.create(libroId);
             res.status(201).json({data: licencia});
         }catch(error){
             res.status(500).json({error: error.message});
