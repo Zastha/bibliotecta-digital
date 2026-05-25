@@ -62,7 +62,7 @@ export default function Usuarios() {
                     <tbody>
                         {usuarios.map(u => (
                             <tr key={u.id}>
-                                <td>{u.id}</td>
+                                <td> <a href={`/usuarios/${u.id}`}>{u.auth_id}</a></td>
                                 <td>{u.nombre}</td>
                                 <td>{u.email}</td>
                                 <td>{u.rol}</td>
