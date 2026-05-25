@@ -3,7 +3,7 @@ const LibroModel = require('../models/libro.model');
 const LibroController = {
     async getAll(req, res){
         try{
-            const libros = await libroModel.getAll();
+            const libros = await LibroModel.getAll();
             res.status(200).json({data: libros});
         }catch(error){
             res.status(500).json({error: error.message});
@@ -12,7 +12,7 @@ const LibroController = {
 
     async getById(req, res){
         try{
-            const libro = await libroModel.getById(req.params.id);
+            const libro = await LibroModel.getById(req.params.id);
             if(!libro) return res.status(404).json({error: 'Libro no encontrado'});
             res.status(200).json({data: libro});
         }catch(error){
@@ -23,7 +23,7 @@ const LibroController = {
     async create(req, res){
         try{
             const {categorias, ...libro} = req.body;
-            if(!libro.titutlo || !libro.autor){
+            if(!libro.titulo || !libro.autor){
                 return res.status(400).json({error: 'El título y el autor son obligatorios'});
             }
             const libroCreado = await LibroModel.create(libro, categorias);

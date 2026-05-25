@@ -81,7 +81,17 @@ const LibroModel = {
         libroActualizado = result.rows[0];
       }
       if (categorias) await actualizarCategorias(client, id, categorias);
-      return libroActualizado;
+
+      const resultado = await client.query(`
+          SELECT l.*, ARRAY_AGG(c.nombre) AS categorias
+          FROM libros l
+          LEFT JOIN libro_categorias lc ON l.id = lc.libro_id
+          LEFT JOIN categorias c ON lc.categoria_id = c.id
+          WHERE l.id = $1
+          GROUP BY l.id
+        `, [id]);
+    
+      return resultado.rows[0];
     });
   },
 
