@@ -7,7 +7,7 @@ const rolesMiddleware = require('../middleware/roles.middleware');
 router.get('/',                   authMiddleware, rolesMiddleware('administrador'), ListaEsperaController.getAll);
 router.get('/libro/:libroId',     authMiddleware, rolesMiddleware('administrador'), ListaEsperaController.getByLibro);
 router.get('/usuario/:usuarioId', authMiddleware, rolesMiddleware('alumno', 'maestro', 'administrador'), ListaEsperaController.getByUsuario);
-router.post('/',                  authMiddleware, rolesMiddleware('alumno', 'maestro'), ListaEsperaController.create);
+router.post('/',                  authMiddleware, rolesMiddleware('alumno', 'maestro', 'administrador'), ListaEsperaController.create);
 router.patch('/desactivar',       authMiddleware, rolesMiddleware('alumno', 'maestro', 'administrador'), ListaEsperaController.desactivar);
 
 module.exports = router;

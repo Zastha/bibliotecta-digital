@@ -79,6 +79,17 @@ const PrestamoModel = {
 
   async create(usuarioId, libroId, diasPrestamo = 14) {
     return conTransaccion(async (client) => {
+
+      const prestamoActivo = await client.query(
+        `SELECT p.id FROM prestamos p
+        JOIN licencias lc ON p.licencia_id = lc.id
+        WHERE lc.libro_id = $1 AND p.usuario_id = $2 AND p.estado = 'activo'`,
+        [libroId, usuarioId]
+      );
+
+
+      if (prestamoActivo.rows[0]) throw new Error('Ya tienes un préstamo activo para este libro');
+      
       const licencia = await LicenciaModel.getDisponiblesByLibro(libroId);
       if (!licencia) throw new Error('No hay licencias disponibles para este libro');
 
