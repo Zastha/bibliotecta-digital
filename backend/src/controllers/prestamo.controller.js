@@ -1,6 +1,6 @@
 const PrestamoModel = require('../models/prestamo.model');
 const ListaEsperaModel = require('../models/listaEspera.model');
-
+const { pool } = require('../config/database');
 const PrestamoController = {
     async getAll(req, res){
         try{
@@ -58,26 +58,30 @@ const PrestamoController = {
             }
         },
 
-        async devolver(req, res){
-            try{
+        async devolver(req, res) {
+            try {
                 const prestamo = await PrestamoModel.devolver(req.params.id);
-                if(!prestamo) return res.status(404).json({error: 'Prestamo no encontrado'});
+                if (!prestamo) return res.status(404).json({ error: 'Préstamo no encontrado' });
 
-                const licencia = await prestamo.licencia_id;
-                const siguiente = await ListaEsperaModel.getSiguiente(licencia);
+                const licenciaResult = await pool.query(
+                'SELECT libro_id FROM licencias WHERE id = $1',
+                [prestamo.licencia_id]
+                );
+                const libroId = licenciaResult.rows[0]?.libro_id;
 
-                if(siguiente){
-                    await ListaEsperaModel.desactivar(siguiente.usuario_id, licencia);
+                const siguiente = await ListaEsperaModel.getSiguiente(libroId);
+                if (siguiente) {
+                await ListaEsperaModel.desactivar(siguiente.usuario_id, libroId);
                 }
 
                 res.status(200).json({
-                    data:prestamo,
-                    siguienteEnEspera: siguiente || null
+                data: prestamo,
+                siguienteEnEspera: siguiente || null
                 });
-            }catch(error){
-                res.status(500).json({error: error.message});
+            } catch (error) {
+                res.status(500).json({ error: error.message });
             }
-        }
+            }
 };
 
 module.exports = PrestamoController;

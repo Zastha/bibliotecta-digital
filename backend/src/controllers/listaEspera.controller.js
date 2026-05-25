@@ -1,6 +1,7 @@
 const ListaEsperaModel = require('../models/listaEspera.model');
 const LicenciaModel = require('../models/licencia.model');
 const { getByUsuario } = require('./prestamo.controller');
+const { pool } = require('../config/database');
 
 const ListaEsperaController = {
     async getAll(req, res){
@@ -40,6 +41,16 @@ const ListaEsperaController = {
             if(!usuarioId || !libroId){
                 return res.status(400).json({error: 'El usuario y el libro son obligatorios'});
             }
+
+            const prestamoActivo = await pool.query(
+                `SELECT p.id FROM prestamos p
+                JOIN licencias lc ON p.licencia_id = lc.id
+                WHERE lc.libro_id = $1 AND p.usuario_id = $2 AND p.estado = 'activo'`,
+                [libroId, usuarioId]
+                );
+                if (prestamoActivo.rows[0]) {
+                return res.status(400).json({ error: 'Ya tienes este libro prestado, no puedes unirte a la lista de espera' });
+                }
 
             const licenciaDisponible = await LicenciaModel.getDisponiblesByLibro(libroId);
             if(licenciaDisponible){
