@@ -19,6 +19,7 @@ app.use('/api/licencias',    require('./routes/licencia.routes'));
 app.use('/api/prestamos',    require('./routes/prestamo.routes'));
 app.use('/api/lista-espera', require('./routes/listaEspera.routes'));
 app.use('/api/categorias',   require('./routes/categoria.routes'));
+app.use('/api/usuarios',     require('./routes/usuario.routes'));
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
