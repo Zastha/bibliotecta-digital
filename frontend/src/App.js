@@ -5,6 +5,8 @@ import UsuarioDetalle from './pages/UsuarioDetalle';
 import Prestamos from './pages/Prestamos';
 import PrestamosUsuario from './pages/PrestamosUsuario';
 import AdminNavbar from './components/AdminNavbar';
+import Licencias from './pages/Licencias';
+import LicenciasLibro from './pages/LicenciasLibro';
 import Libros from './pages/Libros';
 import LibroDetalle from './pages/LibroDetalle';
 
@@ -19,6 +21,9 @@ function App(){
       <Route path="/usuarios/:id" element={<UsuarioDetalle/>} />
       <Route path="/prestamos" element={<Prestamos/>} />
       <Route path="/prestamos/usuario/:usuarioId" element={<PrestamosUsuario/>} />
+      <Route path="/licencias" element={<Licencias/>} />
+      <Route path="/licencias/libro/:libroId" element={<LicenciasLibro/>} />
+
       <Route path="/libros" element={<Libros/>} />
       <Route path="/libros/:id" element={<LibroDetalle/>} />
 
