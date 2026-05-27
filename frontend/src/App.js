@@ -4,28 +4,44 @@ import Usuarios from './pages/Usuarios';
 import UsuarioDetalle from './pages/UsuarioDetalle';
 import Prestamos from './pages/Prestamos';
 import PrestamosUsuario from './pages/PrestamosUsuario';
-import AdminNavbar from './components/AdminNavbar';
+import RolNavbar from './components/RolNavbar';
 import Licencias from './pages/Licencias';
 import LicenciasLibro from './pages/LicenciasLibro';
 import Libros from './pages/Libros';
 import LibroDetalle from './pages/LibroDetalle';
+import { Ruta } from './components/ruta';
+import { useRol } from './hooks/roles';
 
 function App(){
+
+const { rol, loading } = useRol();
+
+  if (loading) {
+    return <div style={{ padding: '20px' }}>Cargando...</div>;
+  }
+
+  // Determinar la ruta inicial según el rol
+  const rutaInicial = rol === 'administrador' ? '/usuarios' : '/libros';
+
   return(
     <BrowserRouter>
-    <AdminNavbar />
+    <RolNavbar />
     <Routes>
-      <Route path="/" element={<Navigate to="/usuarios" replace/>} />
+      <Route path="/" element={<Navigate to={rutaInicial} replace/>} />
       <Route path="/health" element={<Health/>} />
-      <Route path="/usuarios" element={<Usuarios/>} />
-      <Route path="/usuarios/:id" element={<UsuarioDetalle/>} />
+      
+      {/* Para ambos roles */}
       <Route path="/prestamos" element={<Prestamos/>} />
       <Route path="/prestamos/usuario/:usuarioId" element={<PrestamosUsuario/>} />
-      <Route path="/licencias" element={<Licencias/>} />
-      <Route path="/licencias/libro/:libroId" element={<LicenciasLibro/>} />
-
       <Route path="/libros" element={<Libros/>} />
       <Route path="/libros/:id" element={<LibroDetalle/>} />
+
+      {/* Solo para administradores */}
+      <Route path="/usuarios" element={<Ruta rolRequerido="administrador"><Usuarios/></Ruta>} />
+      <Route path="/usuarios/:id" element={<Ruta rolRequerido="administrador"><UsuarioDetalle/></Ruta>} />
+      <Route path="/licencias" element={<Ruta rolRequerido="administrador"><Licencias/></Ruta>} />
+      <Route path="/licencias/libro/:libroId" element={<Ruta rolRequerido="administrador"><LicenciasLibro/></Ruta>} />
+
 
     </Routes>
     </BrowserRouter>

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useRol } from '../hooks/roles';
 import api from '../services/api';
 
 export default function Libros() {
+    const { rol } = useRol();  
     const [libros, setLibros] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -34,21 +36,26 @@ export default function Libros() {
         <section>
             <h1>Libros</h1>
 
-            <h2>Nuevo libro</h2>
-            <form onSubmit={crear}>
-                <input placeholder="Título" value={form.titulo} onChange={e => set('titulo', e.target.value)} required />
-                <input placeholder="Autor" value={form.autor} onChange={e => set('autor', e.target.value)} required />
-                <input placeholder="ISBN" value={form.isbn} onChange={e => set('isbn', e.target.value)} required />
-                <button type="submit">Crear</button>
-            </form>
-
+            {rol === 'administrador' && (
+                <>
+                    <h2>Nuevo libro</h2>
+                    <form onSubmit={crear}>
+                        <input placeholder="Título" value={form.titulo} onChange={e => set('titulo', e.target.value)} required />
+                        <input placeholder="Autor" value={form.autor} onChange={e => set('autor', e.target.value)} required />
+                        <input placeholder="ISBN" value={form.isbn} onChange={e => set('isbn', e.target.value)} required />
+                    <button type="submit">Crear</button>
+                    </form>
+                    
+                </>
+            )}
+                
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
             {loading ? <p>Cargando...</p> : (
                 <table>
                     <thead>
-                        <tr>   
-                            <th>ID</th>
+                        <tr>  
+                            {rol === 'administrador' && <th>ID</th>} 
                             <th>Titulo</th>
                             <th>Autor</th>
                             <th>ISBN</th>
@@ -57,7 +64,8 @@ export default function Libros() {
                     <tbody>
                         {libros.map(libro => (
                             <tr key={libro.id}>
-                                 <td> <a href={`/libros/${libro.id}`}>{libro.id}</a></td>
+                                
+                                {rol === 'administrador' && <td> <a href={`/libros/${libro.id}`}>{libro.id}</a></td>}
                                 <td>{libro.titulo}</td>
                                 <td>{libro.autor}</td>
                                 <td>{libro.isbn}</td>
