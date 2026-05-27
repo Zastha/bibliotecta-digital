@@ -122,7 +122,7 @@ router.get('/usuario/:usuarioId', authMiddleware, rolesMiddleware('alumno', 'mae
  *       403:
  *         description: No tienes permisos
  */
-router.post('/', authMiddleware, rolesMiddleware('alumno', 'maestro'), PrestamoController.create);
+router.post('/', authMiddleware, rolesMiddleware('alumno', 'maestro','administrador'), PrestamoController.create);
 
 /**
  * @swagger

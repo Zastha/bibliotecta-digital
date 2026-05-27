@@ -11,6 +11,8 @@ import Libros from './pages/Libros';
 import LibroDetalle from './pages/LibroDetalle';
 import { Ruta } from './components/ruta';
 import { useRol } from './hooks/roles';
+import ListaEspera from './pages/ListaEspera';
+import ListaEsperaLibro from './pages/ListaEsperaLibro';
 
 function App(){
 
@@ -35,12 +37,14 @@ const { rol, loading } = useRol();
       <Route path="/prestamos/usuario/:usuarioId" element={<PrestamosUsuario/>} />
       <Route path="/libros" element={<Libros/>} />
       <Route path="/libros/:id" element={<LibroDetalle/>} />
+      <Route path="/lista-espera" element={<ListaEspera/>} />
 
       {/* Solo para administradores */}
       <Route path="/usuarios" element={<Ruta rolRequerido="administrador"><Usuarios/></Ruta>} />
       <Route path="/usuarios/:id" element={<Ruta rolRequerido="administrador"><UsuarioDetalle/></Ruta>} />
       <Route path="/licencias" element={<Ruta rolRequerido="administrador"><Licencias/></Ruta>} />
       <Route path="/licencias/libro/:libroId" element={<Ruta rolRequerido="administrador"><LicenciasLibro/></Ruta>} />
+      <Route path="/lista-espera/libro/:libroId" element={<ListaEsperaLibro/>} />
 
 
     </Routes>

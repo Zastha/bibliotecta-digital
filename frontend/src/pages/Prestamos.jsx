@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import api, {UUID, ROL} from '../services/api';
 
 export default function Prestamos() {
     const [prestamos, setPrestamos] = useState([]);
@@ -11,9 +11,14 @@ export default function Prestamos() {
 
     const cargar = (f) => {
         setLoading(true);
-        const url = f === 'activos' ? '/prestamos/activos' 
+        let url;
+        if(ROL === 'administrador') {
+            url = f === 'activos' ? '/prestamos/activos' 
                     : f === 'vencer' ? '/prestamos/vencer?dias=3'
                     : '/prestamos';
+        } else {
+            url = `/prestamos/usuario/${UUID}`;
+        }
         api.get(url)
             .then(res => setPrestamos(res.data.data))
             .catch(err => setError(err.response?.data?.error || 'Error al cargar préstamos'))
@@ -32,9 +37,15 @@ export default function Prestamos() {
             setOk('Préstamo creado correctamente');
             setForm({ usuarioId: '', libroId: '', diasPrestamo: 14 });
             cargar(filtro);
-        } catch (err) {
-            setError(err.response?.data?.error || 'Error al crear préstamo');
-        }
+       } catch (err) {
+            const mensaje = err.response?.data?.error || 'Error al crear préstamo';
+            if (mensaje === 'No hay licencias disponibles para este libro') {
+                const confirmar = window.confirm(mensaje + '. ¿Desea unirse a la lista de espera?');
+                if (confirmar)  window.location.href = '/lista-espera';
+            } else {
+                setError(mensaje);
+    }
+}
     };
 
     const devolver = async (id) => {
@@ -72,22 +83,22 @@ export default function Prestamos() {
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Usuario</th>
+                            {ROL === 'administrador' && <th>Usuario</th>}
                             <th>Libro</th>
                             <th>Fecha préstamo</th>
                             <th>Fecha vencimiento</th>
                             <th>Estado</th>
-                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {prestamos.map(p => (
                             <tr key={p.id}>
                                 <td>{p.id}</td>
-                                <td>{p.usuario_nombre}</td>
+                                {ROL === 'administrador' && <td>{p.usuario_nombre}</td>}
                                 <td>{p.libro_titulo}</td>
                                 <td>{new Date(p.fecha_inicio).toLocaleDateString('es-MX')}</td>
                                 <td>{new Date(p.fecha_vencimiento).toLocaleDateString('es-MX')}</td>
+                                <td>{p.estado}</td>
                                 <td>{p.estado === 'activo' && (<button onClick={() => devolver(p.id)}>Devolver</button>)}</td>
                             </tr>
                         ))}

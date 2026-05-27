@@ -49,7 +49,7 @@ router.get('/', authMiddleware, rolesMiddleware('administrador'), ListaEsperaCon
  *       403:
  *         description: No tienes permisos
  */
-router.get('/libro/:libroId', authMiddleware, rolesMiddleware('administrador'), ListaEsperaController.getByLibro);
+router.get('/libro/:libroId', authMiddleware, rolesMiddleware('alumno', 'maestro', 'administrador'), ListaEsperaController.getByLibro);
 
 /**
  * @swagger
