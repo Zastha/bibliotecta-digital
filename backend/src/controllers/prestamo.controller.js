@@ -1,6 +1,7 @@
 const PrestamoModel = require('../models/prestamo.model');
 const ListaEsperaModel = require('../models/listaEspera.model');
 const { pool } = require('../config/database');
+const axios = require('axios');
 const PrestamoController = {
     async getAll(req, res){
         try{
@@ -49,6 +50,20 @@ const PrestamoController = {
                 }
 
                 const prestamo = await PrestamoModel.create(usuarioId, libroId, diasPrestamo);
+
+                // Notificar al modulo de notificaciones
+                const usuario = await pool.query('SELECT * FROM usuarios WHERE id = $1', [usuarioId]);
+                const libro = await pool.query('SELECT * FROM libros WHERE id = $1', [libroId]);
+
+                await axios.post(process.env.NOTIFICACIONES_PRESTAMO_URL, {
+                    userId: usuarioId,
+                    prioridad: 'alta',
+                    tituloLibro: libro.rows[0].titulo,
+                    autorLibro: libro.rows[0].autor,
+                    fechaPrestamo: prestamo.fecha_inicio,
+                    fechaVencimiento: prestamo.fecha_vencimiento
+                }).catch(err => console.error('Error al notificar prestamo', err.message));
+
                 res.status(201).json({data: prestamo});
             }catch (error) {
             if (error.message === 'No hay licencias disponibles para este libro') {
@@ -73,6 +88,21 @@ const PrestamoController = {
                 if (siguiente) {
                 await ListaEsperaModel.desactivar(siguiente.usuario_id, libroId);
                 }
+
+
+                const libro = await pool.query(
+                    'SELECT l.* FROM libros l JOIN licencias lc ON lc.libro_id = l.id WHERE lc.id = $1',
+                    [prestamo.licencia_id]
+                );
+
+                await axios.post(process.env.NOTIFICACIONES_DEVOLUCION_URL, {
+                    userId: prestamo.usuario_id,
+                    prioridad: 'alta',
+                    tituloLibro: libro.rows[0].titulo,
+                    autorLibro: libro.rows[0].autor,
+                    fechaPrestamo: prestamo.fecha_inicio,
+                    fechaVencimiento: prestamo.fecha_vencimiento
+                }).catch(err => console.error('Error al notificar devolucion', err.message));
 
                 res.status(200).json({
                 data: prestamo,

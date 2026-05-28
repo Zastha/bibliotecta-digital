@@ -10,6 +10,7 @@ export default function Prestamos() {
     const [form, setForm] = useState({ usuarioId: '', libroId: '', diasPrestamo: 14 });
     const [filtro, setFiltro] = useState('todos');
     const { rol, authId } = useRol();
+    const [devolviendo, setDevolviendo] = useState(null);
 
     const cargar = (f) => {
         setLoading(true);
@@ -52,11 +53,14 @@ export default function Prestamos() {
 
     const devolver = async (id) => {
         if (!window.confirm('¿Confirmar devolución?')) return;
+        setDevolviendo(id);
         try {
             await api.patch(`/prestamos/${id}/devolver`);
             cargar(filtro);
         } catch (err) {
             setError(err.response?.data?.error || 'Error al devolver');
+        } finally{
+            setDevolviendo(null);
         }
     };
 
@@ -118,9 +122,13 @@ export default function Prestamos() {
                                             <td className="py-3 pr-4 text-slate-700">{p.estado}</td>
                                             <td className="py-3 pr-4">
                                                 {p.estado === 'activo' && (
-                                                    <button className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50" onClick={() => devolver(p.id)}>
-                                                        Devolver
-                                                    </button>
+                                                 <button 
+                                                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    onClick={() => devolver(p.id)}
+                                                    disabled={devolviendo === p.id}
+                                                >
+                                                    {devolviendo === p.id ? 'Devolviendo...' : 'Devolver'}
+                                                </button>
                                                 )}
                                             </td>
                                         </tr>
