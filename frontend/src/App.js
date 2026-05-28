@@ -13,6 +13,7 @@ import { Ruta } from './components/ruta';
 import { useRol } from './hooks/roles';
 import ListaEspera from './pages/ListaEspera';
 import ListaEsperaLibro from './pages/ListaEsperaLibro';
+import ListaEsperaUsuario from './pages/ListtaEsperaUsuario';
 import Login from './pages/Login';
 
 function App() {
@@ -34,6 +35,7 @@ const rutaInicial = !rol ? '/login' : rol === 'administrador' ? '/usuarios' : '/
         <Route path="/libros" element={<Libros />} />
         <Route path="/libros/:id" element={<LibroDetalle />} />
         <Route path="/lista-espera" element={<ListaEspera />} />
+        <Route path="/lista-espera/usuario/:usuarioId" element={<ListaEsperaUsuario />} />
 
         {/* Solo para administradores */}
         <Route path="/usuarios" element={<Ruta rolRequerido="administrador"><Usuarios /></Ruta>} />

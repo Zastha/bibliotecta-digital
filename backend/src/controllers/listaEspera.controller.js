@@ -6,7 +6,11 @@ const { pool } = require('../config/database');
 const ListaEsperaController = {
     async getAll(req, res){
         try{
-            const lista = await ListaEsperaModel.getAll();
+            const isAdmin = req.usuario?.rol === 'administrador';
+            const lista = isAdmin
+                ? await ListaEsperaModel.getAll()
+                : await ListaEsperaModel.getByUsuario(req.usuario.id);
+
             res.status(200).json({data: lista});
         }catch(error){
             res.status(500).json({error: error.message});
@@ -28,7 +32,11 @@ const ListaEsperaController = {
 
     async getByUsuario(req, res){
         try{
-            const lista = await ListaEsperaModel.getByUsuario(req.params.getByUsuario);
+            if (req.usuario?.rol !== 'administrador' && String(req.usuario?.id) !== String(req.params.usuarioId)) {
+                return res.status(403).json({error: 'No tienes permiso para ver esta lista de espera'});
+            }
+
+            const lista = await ListaEsperaModel.getByUsuario(req.params.usuarioId);
             res.status(200).json({data: lista});
         }catch(error){
             res.status(500).json({error: error.message});
@@ -55,6 +63,24 @@ const ListaEsperaController = {
             const licenciaDisponible = await LicenciaModel.getDisponiblesByLibro(libroId);
             if(licenciaDisponible){
                 return res.status(400).json({error: 'Hay licencias disponibles, no es necesario entrar a la lista de espera'});
+            }
+
+            const existente = await pool.query(
+                'SELECT * FROM lista_espera WHERE usuario_id = $1 AND libro_id = $2',
+                [usuarioId, libroId]
+            );
+
+            if (existente.rows[0]) {
+                if (existente.rows[0].activo) {
+                    return res.status(400).json({error: 'El usuario ya esta en la lista de espera'});
+                }
+
+                const reactivada = await pool.query(
+                    'UPDATE lista_espera SET activo = TRUE WHERE usuario_id = $1 AND libro_id = $2 RETURNING *',
+                    [usuarioId, libroId]
+                );
+
+                return res.status(201).json({data: reactivada.rows[0]});
             }
 
             const entrada = await ListaEsperaModel.create(usuarioId, libroId);

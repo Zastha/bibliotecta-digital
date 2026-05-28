@@ -7,7 +7,7 @@ import './RolNavbar.css';
 
 export default function RolNavbar() {
 
-    const { rol, authId, loading } = useRol();
+    const { rol, authId,usuarioId, loading } = useRol();
     const { logout } = useAuth();
     const navigate = useNavigate();
 
@@ -27,11 +27,23 @@ export default function RolNavbar() {
         'maestro': 'Maestro'
     }[rol] || 'Usuario';
 
+     const rutaListaEspera = rol === 'administrador' 
+        ? '/lista-espera' 
+        : `/lista-espera/usuario/${usuarioId}`;
+
     return (
         <nav className="rol-nav">
             <div className="rol-brand">Biblioteca - {nombreRol}</div>
             <ul className="rol-links">
                 
+                 <li>
+                    <NavLink 
+                        to={rutaListaEspera}
+                        className={({isActive}) => isActive ? 'active' : ''}
+                    >
+                        Lista de Espera
+                    </NavLink>
+                </li>
                 <li>
                     <NavLink 
                         to="/prestamos" 
