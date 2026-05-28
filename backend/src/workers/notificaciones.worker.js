@@ -49,7 +49,7 @@ const verificarPrestamos = async () =>{
 const iniciarWorker = () => {
     console.log('Worker de notificaciones iniciado');
 
-    //cron.schedule('*/10 * * * * *', verificarPrestamos); <- para pruebas cada 10 segundos
+    //cron.schedule('*/10 * * * * *', verificarPrestamos); //<- para pruebas cada 10 segundos
     cron.schedule('0 8 * * * *', verificarPrestamos); // <- para pruebas cada dia a las 8am
 }
 

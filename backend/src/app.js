@@ -17,6 +17,7 @@ app.get('/api/health', (req, res) => {
 
 // Rutas
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/auth',        require('./routes/auth.routes'));
 app.use('/api/libros',       require('./routes/libro.routes'));
 app.use('/api/licencias',    require('./routes/licencia.routes'));
 app.use('/api/prestamos',    require('./routes/prestamo.routes'));
