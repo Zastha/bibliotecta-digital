@@ -3,15 +3,15 @@ const UsuarioModel = require('../models/usuario.model');
 const authMiddleware = async(req, res, next) => {
 
     try{
+
+        //Si no fuera una simulacion recibiriamos un JWT encripatdo
+        //El cual tendriamos que decriptar para ver si es valido
+        //Pero por ahora usaremos el auth-id
         const authId = req.headers['auth-id'];
         if(!authId){
             return res.status(401).json({error: 'No autorizado, auth-id requerido'});
         }
 
-
-        //TODO: Si se consigue un contranto con el equipo de autenticacion 
-        // Haremos una peticion a la api de autenticacion para validar el token
-        // Por ahora simularemos la validacion buscando el usuario en la base de datos
 
         const usuario = await UsuarioModel.getByAuthId(authId);
 

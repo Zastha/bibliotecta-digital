@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import api, {UUID, ROL} from '../services/api';
+import api from '../services/api';
+import { useRol } from '../hooks/roles';
 
 export default function Prestamos() {
     const [prestamos, setPrestamos] = useState([]);
@@ -8,16 +9,17 @@ export default function Prestamos() {
     const [ok, setOk] = useState('');
     const [form, setForm] = useState({ usuarioId: '', libroId: '', diasPrestamo: 14 });
     const [filtro, setFiltro] = useState('todos');
+    const { rol, authId } = useRol();
 
     const cargar = (f) => {
         setLoading(true);
         let url;
-        if(ROL === 'administrador') {
+        if(rol === 'administrador') {
             url = f === 'activos' ? '/prestamos/activos' 
                     : f === 'vencer' ? '/prestamos/vencer?dias=3'
                     : '/prestamos';
         } else {
-            url = `/prestamos/usuario/${UUID}`;
+            url = `/prestamos/usuario/${authId}`;
         }
         api.get(url)
             .then(res => setPrestamos(res.data.data))
@@ -97,7 +99,7 @@ export default function Prestamos() {
                                 <thead>
                                     <tr className="border-b border-slate-200 text-slate-500">
                                         <th className="py-3 pr-4 font-medium">ID</th>
-                                        {ROL === 'administrador' && <th className="py-3 pr-4 font-medium">Usuario</th>}
+                                        {rol === 'administrador' && <th className="py-3 pr-4 font-medium">Usuario</th>}
                                         <th className="py-3 pr-4 font-medium">Libro</th>
                                         <th className="py-3 pr-4 font-medium">Fecha préstamo</th>
                                         <th className="py-3 pr-4 font-medium">Fecha vencimiento</th>
@@ -109,7 +111,7 @@ export default function Prestamos() {
                                     {prestamos.map(p => (
                                         <tr key={p.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
                                             <td className="py-3 pr-4 text-slate-800">{p.id}</td>
-                                            {ROL === 'administrador' && <td className="py-3 pr-4 text-slate-700">{p.usuario_nombre}</td>}
+                                            {rol === 'administrador' && <td className="py-3 pr-4 text-slate-700">{p.usuario_nombre}</td>}
                                             <td className="py-3 pr-4 text-slate-700">{p.libro_titulo}</td>
                                             <td className="py-3 pr-4 text-slate-600">{new Date(p.fecha_inicio).toLocaleDateString('es-MX')}</td>
                                             <td className="py-3 pr-4 text-slate-600">{new Date(p.fecha_vencimiento).toLocaleDateString('es-MX')}</td>
