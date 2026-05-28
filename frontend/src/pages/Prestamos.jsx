@@ -3,6 +3,8 @@ import api from '../services/api';
 import { useRol } from '../hooks/roles';
 
 export default function Prestamos() {
+    const [usuarios, setUsuarios] = useState([]);
+    const [libros, setLibros] = useState([]);
     const [prestamos, setPrestamos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -11,6 +13,7 @@ export default function Prestamos() {
     const [filtro, setFiltro] = useState('todos');
     const { rol, usuarioId } = useRol();
     const [devolviendo, setDevolviendo] = useState(null);
+    const [busqueda, setBusqueda] = useState('');
 
     const cargar = (f) => {
         setLoading(true);
@@ -27,6 +30,11 @@ export default function Prestamos() {
             .catch(err => setError(err.response?.data?.error || 'Error al cargar préstamos'))
             .finally(() => setLoading(false));
     };
+
+    useEffect(() => {
+    api.get('/usuarios').then(res => setUsuarios(res.data.data));
+    api.get('/libros').then(res => setLibros(res.data.data));
+}, []);
 
     useEffect(() => { cargar(filtro); }, [filtro, rol, usuarioId]);
 
@@ -78,8 +86,29 @@ export default function Prestamos() {
                     {error && <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
                     {ok && <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{ok}</p>}
 
-                    <input className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition placeholder:text-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200" placeholder="ID de usuario" value={form.usuarioId} onChange={e => set('usuarioId', e.target.value)} required />
-                    <input className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition placeholder:text-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200" placeholder="ID de libro" value={form.libroId} onChange={e => set('libroId', e.target.value)} required />
+                                    <select 
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+                    value={form.usuarioId} 
+                    onChange={e => set('usuarioId', e.target.value)} 
+                    required
+                >
+                    <option value="">-- Selecciona un usuario --</option>
+                    {usuarios.map(u => (
+                        <option key={u.id} value={u.id}>{u.nombre} ({u.rol})</option>
+                    ))}
+                </select>
+
+                <select 
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+                    value={form.libroId} 
+                    onChange={e => set('libroId', e.target.value)} 
+                    required
+                >
+                    <option value="">-- Selecciona un libro --</option>
+                    {libros.map(l => (
+                        <option key={l.id} value={l.id}>{l.titulo} - {l.autor}</option>
+                    ))}
+                </select>
                     <input className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition placeholder:text-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200" type="number" placeholder="Días de préstamo" value={form.diasPrestamo} onChange={e => set('diasPrestamo', parseInt(e.target.value))} required />
 
                     <button type="submit" className="inline-flex w-full items-center justify-center rounded-xl bg-sky-600 px-4 py-2 font-medium text-white transition hover:bg-sky-700">
@@ -90,6 +119,12 @@ export default function Prestamos() {
                 <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                         <h2 className="text-lg font-medium text-slate-900">Listado</h2>
+                        <input
+    className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition placeholder:text-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+    placeholder="Buscar por libro o usuario..."
+    value={busqueda}
+    onChange={e => setBusqueda(e.target.value)}
+/>
                         <div className="flex flex-wrap gap-2">
                             <button className={`rounded-xl px-3 py-2 text-sm font-medium transition ${filtro === 'todos' ? 'bg-sky-600 text-white' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`} onClick={() => setFiltro('todos')} disabled={filtro === 'todos'}>Todos</button>
                             <button className={`rounded-xl px-3 py-2 text-sm font-medium transition ${filtro === 'activos' ? 'bg-sky-600 text-white' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`} onClick={() => setFiltro('activos')} disabled={filtro === 'activos'}>Activos</button>

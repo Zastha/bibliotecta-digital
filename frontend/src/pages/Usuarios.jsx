@@ -6,8 +6,7 @@ export default function Usuarios() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [form, setForm] = useState({ auth_id: '', nombre: '', email: '', rol: 'alumno' });
-    const [buscarId, setBuscarId] = useState('');
-
+    const [busqueda, setBusqueda] = useState('');
 
     const cargar = () => {
         setLoading(true);
@@ -32,57 +31,59 @@ export default function Usuarios() {
         }
     };
 
-    const buscar = async (e) => {
-        e.preventDefault();
-        if (buscarId.trim()) window.location.href = `/usuarios/${buscarId.trim()}`;
-    };
-
     return (
-    <section>
-        <h1>Usuarios</h1>
+        <section>
+            <h1>Usuarios</h1>
 
-        <h2>Nuevo usuario</h2>
-        <form onSubmit={crear}>
-            <input placeholder="auth_id" value={form.auth_id} onChange={e => set('auth_id', e.target.value)} required />
-            <input placeholder="Nombre" value={form.nombre} onChange={e => set('nombre', e.target.value)} required />
-            <input placeholder="Email" type="email" value={form.email} onChange={e => set('email', e.target.value)} required />
-            <select value={form.rol} onChange={e => set('rol', e.target.value)}>
-                <option value="alumno">Alumno</option>
-                <option value="maestro">Maestro</option>
-                <option value="administrador">Administrador</option>
-            </select>
-            <button type="submit">Crear</button>
-        </form>
+            <h2>Nuevo usuario</h2>
+            <form onSubmit={crear}>
+                <input placeholder="auth_id" value={form.auth_id} onChange={e => set('auth_id', e.target.value)} required />
+                <input placeholder="Nombre" value={form.nombre} onChange={e => set('nombre', e.target.value)} required />
+                <input placeholder="Email" type="email" value={form.email} onChange={e => set('email', e.target.value)} required />
+                <select value={form.rol} onChange={e => set('rol', e.target.value)}>
+                    <option value="alumno">Alumno</option>
+                    <option value="maestro">Maestro</option>
+                    <option value="administrador">Administrador</option>
+                </select>
+                <button type="submit">Crear</button>
+            </form>
 
-        <h2>Buscar usuario por ID</h2>
-        <form onSubmit={buscar}>
-            <input placeholder="UUID del usuario" value={buscarId} onChange={e => setBuscarId(e.target.value)} required />
-            <button type="submit">Buscar</button>
-        </form>
+            <input
+                className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition placeholder:text-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+                placeholder="Buscar por nombre o email..."
+                value={busqueda}
+                onChange={e => setBusqueda(e.target.value)}
+            />
 
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
 
-        {loading ? <p>Cargando...</p> : (
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {usuarios.map(u => (
-                        <tr key={u.id}>
-                            <td><a href={`/usuarios/${u.id}`}>{u.auth_id}</a></td>
-                            <td>{u.nombre}</td>
-                            <td>{u.email}</td>
-                            <td>{u.rol}</td>
+            {loading ? <p>Cargando...</p> : (
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        )}
-    </section>
-);}
+                    </thead>
+                    <tbody>
+                        {usuarios
+                            .filter(u =>
+                                u.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
+                                u.email?.toLowerCase().includes(busqueda.toLowerCase())
+                            )
+                            .map(u => (
+                                <tr key={u.id}>
+                                    <td><a href={`/usuarios/${u.id}`}>{u.auth_id}</a></td>
+                                    <td>{u.nombre}</td>
+                                    <td>{u.email}</td>
+                                    <td>{u.rol}</td>
+                                </tr>
+                            ))}
+                    </tbody>
+                </table>
+            )}
+        </section>
+    );
+}
