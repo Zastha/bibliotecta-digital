@@ -23,27 +23,31 @@ const rutaInicial = !rol ? '/login' : rol === 'administrador' ? '/usuarios' : '/
 
   return (
     <BrowserRouter>
-      <RolNavbar />
-      <Routes>
-        <Route path="/" element={<Navigate to={rutaInicial} replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/health" element={<Health />} />
+      <div className="min-h-screen bg-slate-50 text-slate-900">
+        <RolNavbar />
+        <main>
+          <Routes>
+            <Route path="/" element={<Navigate to={rutaInicial} replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/health" element={<Health />} />
 
-        {/* Para ambos roles */}
-        <Route path="/prestamos" element={<Prestamos />} />
-        <Route path="/prestamos/usuario/:usuarioId" element={<PrestamosUsuario />} />
-        <Route path="/libros" element={<Libros />} />
-        <Route path="/libros/:id" element={<LibroDetalle />} />
-        <Route path="/lista-espera" element={<ListaEspera />} />
-        <Route path="/lista-espera/usuario/:usuarioId" element={<ListaEsperaUsuario />} />
+            {/* Para ambos roles */}
+            <Route path="/prestamos" element={<Prestamos />} />
+            <Route path="/prestamos/usuario/:usuarioId" element={<PrestamosUsuario />} />
+            <Route path="/libros" element={<Libros />} />
+            <Route path="/libros/:id" element={<LibroDetalle />} />
+            <Route path="/lista-espera" element={<ListaEspera />} />
+            <Route path="/lista-espera/usuario/:usuarioId" element={<ListaEsperaUsuario />} />
 
-        {/* Solo para administradores */}
-        <Route path="/usuarios" element={<Ruta rolRequerido="administrador"><Usuarios /></Ruta>} />
-        <Route path="/usuarios/:id" element={<Ruta rolRequerido="administrador"><UsuarioDetalle /></Ruta>} />
-        <Route path="/licencias" element={<Ruta rolRequerido="administrador"><Licencias /></Ruta>} />
-        <Route path="/licencias/libro/:libroId" element={<Ruta rolRequerido="administrador"><LicenciasLibro /></Ruta>} />
-        <Route path="/lista-espera/libro/:libroId" element={<ListaEsperaLibro />} />
-      </Routes>
+            {/* Solo para administradores */}
+            <Route path="/usuarios" element={<Ruta rolRequerido="administrador"><Usuarios /></Ruta>} />
+            <Route path="/usuarios/:id" element={<Ruta rolRequerido="administrador"><UsuarioDetalle /></Ruta>} />
+            <Route path="/licencias" element={<Ruta rolRequerido="administrador"><Licencias /></Ruta>} />
+            <Route path="/licencias/libro/:libroId" element={<Ruta rolRequerido="administrador"><LicenciasLibro /></Ruta>} />
+            <Route path="/lista-espera/libro/:libroId" element={<ListaEsperaLibro />} />
+          </Routes>
+        </main>
+      </div>
     </BrowserRouter>
   );
 }

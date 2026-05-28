@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useRol } from '../hooks/roles';
 import {setAuthId} from '../services/api';
-import './RolNavbar.css';
 
 export default function RolNavbar() {
 
@@ -17,7 +16,7 @@ export default function RolNavbar() {
     navigate('/login');
 };
 
-    if (loading) return <nav className="rol-nav"><p>Cargando...</p></nav>;
+    if (loading) return <nav className="border-b border-slate-200 bg-slate-950/95 px-4 py-4 text-slate-100 shadow-sm backdrop-blur sm:px-6 lg:px-8"><p className="mx-auto max-w-7xl text-sm text-slate-300">Cargando...</p></nav>;
     if (!rol) return null;
 
     // Traducir el rol a un nombre bonito
@@ -32,14 +31,14 @@ export default function RolNavbar() {
         : `/lista-espera/usuario/${usuarioId}`;
 
     return (
-        <nav className="rol-nav">
-            <div className="rol-brand">Biblioteca - {nombreRol}</div>
-            <ul className="rol-links">
-                
-                 <li>
+        <nav className="sticky top-0 z-50 border-b border-slate-200 bg-slate-950/95 px-4 py-4 text-slate-100 shadow-lg shadow-slate-950/10 backdrop-blur sm:px-6 lg:px-8">
+            <div className="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="text-lg font-semibold tracking-wide text-sky-300">Biblioteca - {nombreRol}</div>
+            <ul className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-200">
+                <li>
                     <NavLink 
                         to={rutaListaEspera}
-                        className={({isActive}) => isActive ? 'active' : ''}
+                        className={({isActive}) => `rounded-full px-3 py-2 transition ${isActive ? 'bg-sky-500 text-white shadow-sm' : 'hover:bg-white/10 hover:text-white'}`}
                     >
                         Lista de Espera
                     </NavLink>
@@ -47,7 +46,7 @@ export default function RolNavbar() {
                 <li>
                     <NavLink 
                         to="/prestamos" 
-                        className={({isActive}) => isActive ? 'active' : ''}
+                        className={({isActive}) => `rounded-full px-3 py-2 transition ${isActive ? 'bg-sky-500 text-white shadow-sm' : 'hover:bg-white/10 hover:text-white'}`}
                     >
                         Préstamos
                     </NavLink>
@@ -55,7 +54,7 @@ export default function RolNavbar() {
                 <li>
                     <NavLink 
                         to="/libros" 
-                        className={({isActive}) => isActive ? 'active' : ''}
+                        className={({isActive}) => `rounded-full px-3 py-2 transition ${isActive ? 'bg-sky-500 text-white shadow-sm' : 'hover:bg-white/10 hover:text-white'}`}
                     >
                         Libros
                     </NavLink>
@@ -67,7 +66,7 @@ export default function RolNavbar() {
                         <li>
                             <NavLink 
                                 to="/usuarios" 
-                                className={({isActive}) => isActive ? 'active' : ''}
+                                className={({isActive}) => `rounded-full px-3 py-2 transition ${isActive ? 'bg-sky-500 text-white shadow-sm' : 'hover:bg-white/10 hover:text-white'}`}
                             >
                                 Usuarios
                             </NavLink>
@@ -75,7 +74,7 @@ export default function RolNavbar() {
                         <li>
                             <NavLink 
                                 to="/licencias" 
-                                className={({isActive}) => isActive ? 'active' : ''}
+                                className={({isActive}) => `rounded-full px-3 py-2 transition ${isActive ? 'bg-sky-500 text-white shadow-sm' : 'hover:bg-white/10 hover:text-white'}`}
                             >
                                 Licencias
                             </NavLink>
@@ -84,13 +83,16 @@ export default function RolNavbar() {
                 )}
                
                 {/* Mostrar el auth-id actual */}
-                <li className="auth-id-badge">
-                    <span title="auth-id">{authId}</span>
+                <li className="rounded-full border border-sky-400/40 bg-sky-400/10 px-3 py-2 text-xs text-sky-100">
+                    <span className="font-mono" title="auth-id">{authId}</span>
                 </li>
                 <li>
-                    <button onClick={cerrarSesion}>Cerrar sesión</button>
+                    <button onClick={cerrarSesion} className="rounded-full border border-slate-700 px-3 py-2 text-sm font-medium text-slate-100 transition hover:border-slate-500 hover:bg-slate-800">
+                        Cerrar sesión
+                    </button>
                 </li>
             </ul>
+            </div>
             
         </nav>
     );
