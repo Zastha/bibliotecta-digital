@@ -6,6 +6,7 @@ export function useRol() {
   return {
     rol: usuario?.rol || null,
     authId: usuario?.auth_id || null,
+    usuarioId: usuario?.id || null,
     loading: false
   };
 }
