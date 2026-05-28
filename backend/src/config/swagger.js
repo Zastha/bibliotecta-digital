@@ -22,6 +22,12 @@ const options = {
           name: 'auth-id',
           description: 'ID de autenticación del usuario',
         },
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'JWT de autenticación emitido por el módulo de login',
+        },
       },
     },
     security: [{ authId: [] }],
