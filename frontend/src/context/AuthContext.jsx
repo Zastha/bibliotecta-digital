@@ -16,6 +16,7 @@ export function AuthProvider({ children }) {
     });
 
     const login = (usuarioSeleccionado) =>{
+        setAuthId(usuarioSeleccionado?.auth_id || null);
         setUsuario(usuarioSeleccionado);
         localStorage.setItem('usuario', JSON.stringify(usuarioSeleccionado));
     };

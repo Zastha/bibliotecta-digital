@@ -30,7 +30,7 @@ const iniciarSesion = () =>{
     setAuthId(usuario.auth_id);
     login(usuario);
     
-    usuario.rol === 'administrador' ? navigate('/admin') : navigate('/libros');
+    usuario.rol === 'administrador' ? navigate('/usuarios') : navigate('/libros');
 
 };
 

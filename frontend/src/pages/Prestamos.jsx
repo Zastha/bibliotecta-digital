@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useRol } from '../hooks/roles';
 
@@ -12,6 +13,7 @@ export default function Prestamos() {
     const [form, setForm] = useState({ usuarioId: '', libroId: '', diasPrestamo: 14 });
     const [filtro, setFiltro] = useState('todos');
     const { rol, usuarioId } = useRol();
+    const navigate = useNavigate();
     const [devolviendo, setDevolviendo] = useState(null);
     const [busqueda, setBusqueda] = useState('');
 
@@ -32,9 +34,24 @@ export default function Prestamos() {
     };
 
     useEffect(() => {
-    api.get('/usuarios').then(res => setUsuarios(res.data.data));
-    api.get('/libros').then(res => setLibros(res.data.data));
-}, []);
+        const cargarCatalogos = async () => {
+            try {
+                const librosRes = await api.get('/libros');
+                setLibros(librosRes.data.data || []);
+
+                if (rol === 'administrador') {
+                    const usuariosRes = await api.get('/usuarios');
+                    setUsuarios(usuariosRes.data.data || []);
+                } else if (usuarioId) {
+                    setForm(prev => ({ ...prev, usuarioId }));
+                }
+            } catch (err) {
+                setError(err.response?.data?.error || 'Error al cargar datos');
+            }
+        };
+
+        cargarCatalogos();
+    }, [rol, usuarioId]);
 
     useEffect(() => { cargar(filtro); }, [filtro, rol, usuarioId]);
 
@@ -52,11 +69,31 @@ export default function Prestamos() {
             const mensaje = err.response?.data?.error || 'Error al crear préstamo';
             if (mensaje === 'No hay licencias disponibles para este libro') {
                 const confirmar = window.confirm(mensaje + '. ¿Desea unirse a la lista de espera?');
-                if (confirmar)  window.location.href = '/lista-espera';
+                if (confirmar) {
+                    try {
+                        const usuarioParaLista = rol === 'administrador' ? form.usuarioId : usuarioId;
+                        await api.post('/lista-espera', {
+                            usuarioId: usuarioParaLista,
+                            libroId: form.libroId,
+                        });
+
+                        setOk('Te has unido a la lista de espera correctamente.');
+                        setForm(prev => ({ ...prev, usuarioId: rol === 'administrador' ? prev.usuarioId : usuarioId, libroId: '' }));
+
+                        if (rol === 'administrador') {
+                            navigate('/lista-espera');
+                        } else {
+                            navigate(`/lista-espera/usuario/${usuarioId}`);
+                        }
+                    } catch (joinErr) {
+                        setError(joinErr.response?.data?.error || 'No se pudo agregar a la lista de espera');
+                    }
+                }
             } else {
                 setError(mensaje);
-    }
-}
+            }
+        }
+
     };
 
     const devolver = async (id) => {
@@ -73,7 +110,7 @@ export default function Prestamos() {
     };
 
     return (
-        <section className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+        <section className="w-full space-y-6 px-4 py-6 sm:px-6 lg:px-8">
             <div className="space-y-2">
                 <h1 className="text-3xl font-semibold text-slate-900">Préstamos</h1>
                 <p className="text-sm text-slate-600">Solicita, filtra y devuelve préstamos desde una vista simple.</p>
@@ -86,17 +123,23 @@ export default function Prestamos() {
                     {error && <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
                     {ok && <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{ok}</p>}
 
-                                    <select 
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
-                    value={form.usuarioId} 
-                    onChange={e => set('usuarioId', e.target.value)} 
-                    required
-                >
-                    <option value="">-- Selecciona un usuario --</option>
-                    {usuarios.map(u => (
-                        <option key={u.id} value={u.id}>{u.nombre} ({u.rol})</option>
-                    ))}
-                </select>
+                                    {rol === 'administrador' ? (
+                    <select 
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
+                        value={form.usuarioId} 
+                        onChange={e => set('usuarioId', e.target.value)} 
+                        required
+                    >
+                        <option value="">-- Selecciona un usuario --</option>
+                        {usuarios.map(u => (
+                            <option key={u.id} value={u.id}>{u.nombre} ({u.rol})</option>
+                        ))}
+                    </select>
+                ) : (
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                        Usuario actual: {usuarioId}
+                    </div>
+                )}
 
                 <select 
                     className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-200"

@@ -27,7 +27,7 @@ const rolesMiddleware = require('../middleware/roles.middleware');
  *       403:
  *         description: No tienes permisos
  */
-router.get('/', authMiddleware, rolesMiddleware('administrador'), ListaEsperaController.getAll);
+router.get('/', authMiddleware, rolesMiddleware('alumno', 'maestro', 'administrador'), ListaEsperaController.getAll);
 
 /**
  * @swagger
