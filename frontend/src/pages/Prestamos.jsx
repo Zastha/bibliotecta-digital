@@ -9,7 +9,7 @@ export default function Prestamos() {
     const [ok, setOk] = useState('');
     const [form, setForm] = useState({ usuarioId: '', libroId: '', diasPrestamo: 14 });
     const [filtro, setFiltro] = useState('todos');
-    const { rol, authId } = useRol();
+    const { rol, usuarioId } = useRol();
     const [devolviendo, setDevolviendo] = useState(null);
 
     const cargar = (f) => {
@@ -20,7 +20,7 @@ export default function Prestamos() {
                     : f === 'vencer' ? '/prestamos/vencer?dias=3'
                     : '/prestamos';
         } else {
-            url = `/prestamos/usuario/${authId}`;
+            url = `/prestamos/usuario/${usuarioId}`;
         }
         api.get(url)
             .then(res => setPrestamos(res.data.data))
@@ -28,7 +28,7 @@ export default function Prestamos() {
             .finally(() => setLoading(false));
     };
 
-    useEffect(() => { cargar(filtro); }, [filtro]);
+    useEffect(() => { cargar(filtro); }, [filtro, rol, usuarioId]);
 
     const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
